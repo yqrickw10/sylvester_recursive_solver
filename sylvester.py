@@ -13,30 +13,31 @@ def rtrsyct(A,B,C,uplo,blks):
     C (M*N) dense matrix
     '''
     M,N = A.shape[0], B.shape[0]
+    midM,midN = int(M/2),int(N/2)
     
     if (M>=1 and M<=blks) and (N>=1 and N<=blks):
         X = trsyct(A,B,C,uplo)
         return X
     
     if uplo==1:
-        if N>=1 and N<=M/2:
-            A11,A12,A22=A[0:M/2,0:N/2],A[0:M/2,N/2:N],A[M/2:M,N/2:N]
-            C1,C2=C[0:M/2],C[M/2:M]
+        if N>=1 and N<=midM:
+            A11,A12,A22=A[0:midM,0:midN],A[0:midM,midN:N],A[midM:M,midN:N]
+            C1,C2=C[0:midM],C[midM:M]
             X2 = rtrsyct(A22,B,C2,1,blks)
             C1 = C1-A12@X2
             X1 = rtrsyct(A11,B,C1,1,blks)
             X=np.concatenate((X1,X2),axis=0)
-        elif M>=1 and M<=N/2:
-            B11,B12,B22=B[0:M/2,0:N/2],B[0:M/2,N/2:N],B[M/2:M,N/2:N]
-            C1,C2=C[:,0:N/2],C[:,N/2:N]
+        elif M>=1 and M<=midN:
+            B11,B12,B22=B[0:midM,0:midN],B[0:midM,midN:N],B[midM:M,midN:N]
+            C1,C2=C[:,0:midN],C[:,midN:N]
             X1 = rtrsyct(A,B11,C1,1,blks)
             C2 = C2+X1@B12
             X2 = rtrsyct(A,B22,C2,1,blks)
             X=np.concatenate((X1,X2),axis=1)
         else:
-            A11,A12,A22=A[0:M/2,0:N/2],A[0:M/2,N/2:N],A[M/2:M,N/2:N]
-            B11,B12,B22=B[0:M/2,0:N/2],B[0:M/2,N/2:N],B[M/2:M,N/2:N]
-            C11,C12,C21,C22=C[0:M/2,0:N/2],C[0:M/2,N/2:N],C[M/2:M,0:N/2],C[M/2:M,N/2:N]
+            A11,A12,A22=A[0:midM,0:midN],A[0:midM,midN:N],A[midM:M,midN:N]
+            B11,B12,B22=B[0:midM,0:midN],B[0:midM,midN:N],B[midM:M,midN:N]
+            C11,C12,C21,C22=C[0:midM,0:midN],C[0:midM,midN:N],C[midM:M,0:midN],C[midM:M,midN:N]
             X21 = rtrsyct(A22,B11,C21,1,blks)
             C22 = C22+X21@B12
             C11 = C11-A12@X21
