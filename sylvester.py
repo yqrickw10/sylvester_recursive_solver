@@ -61,6 +61,6 @@ def solve_sylvester(A,B,C):
     
     X = rtrsyct(T_A,T_B,Z_A.T@C@Z_B,1,blks=4)
     
-    return Z_A@XZ_B.T
+    return Z_A@X@Z_B.T
     
     
