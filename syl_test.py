@@ -12,8 +12,9 @@ import sylvester as syl
 def Test():
     A,B,C = TestCase(case=2)
     x1 = scipy.linalg.solve_sylvester(A, -B, C)
+    #x2 = syl.trsyct(A,B,C,1)
     x2 = syl.solve_sylvester(A,B,C)
-    
+        
     print(np.allclose(A.dot(x1) - x1.dot(B), C))
     print(np.allclose(A.dot(x2) - x2.dot(B), C))
     
